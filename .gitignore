@@ -1,0 +1,38 @@
+#gitignore from https://stackoverflow.com/questions/16736856/what-should-be-in-my-gitignore-for-an-android-studio-project
+
+#built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+Project1/bin/
+Project1/gen/
+
+# Local configuration file (sdk path, etc)
+Project1/local.properties
+
+# Windows thumbnail db
+Project1/Thumbs.db
+
+# OSX files
+Project1/.DS_Store
+
+# Android Studio
+*.iml
+Project1/.idea
+#.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
+Project1/.gradle
+Project1/build/
+Project1/.navigation
+Project1/captures/
+Project1/output.json 
+
+#NDK
+Project1/obj/
+Project1/.externalNativeBuild
