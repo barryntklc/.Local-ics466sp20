@@ -1,2 +1,2 @@
-# ics466sp20
-Repository for ICS 466 Design for Mobile Devices - Team Projects
+# .Local
+ICS 466 SP20 App Design Project
