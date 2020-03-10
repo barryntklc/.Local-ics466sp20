@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.room.Room;
 
 import android.Manifest;
 import android.content.Context;
@@ -20,6 +21,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.local.data.AppDatabase;
+import com.example.local.data.AppDatabaseAsyncClass;
+import com.example.local.data.Post;
+import com.example.local.data.PostDao;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,7 +37,8 @@ import java.util.Date;
 
 public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
-    public LocalDatabase db = new LocalDatabase();
+    //https://developer.android.com/training/data-storage/room
+    public static AppDatabase db;
 
     private GoogleMap mMap;
 
@@ -59,6 +65,8 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
 //        getSupportActionBar().setDisplayShowTitleEnabled(false);
         this.setSupportActionBar(new_toolbar);
         this.getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "local-db").build();
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
@@ -239,7 +247,8 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
 
                 Log.i("New-Post", "Creating new post:\n"
                         + "\tLocation: "
-                        + post_location.toString()
+//                        + post_location.toString()
+                        + post_location.toString().substring(post_location.toString().indexOf("(") + 1, post_location.toString().indexOf(")"))
                         + "\n"
                         + "\tTime: "
                         + post_time.toString()
@@ -251,6 +260,10 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
 
                 Toast.makeText(this, "Post Submitted!", Toast.LENGTH_SHORT).show();
 
+                AppDatabaseAsyncClass n = new AppDatabaseAsyncClass(1024, post_text, post_location, post_time);
+                n.execute();
+
+//                db.postDao().
                 //settings
                 //  after making a new post
                 //      1. do nothing
@@ -258,7 +271,7 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
                 //      3. move to current position
 
                 //if return to position set
-                animateToCurrentPosition();
+//                animateToCurrentPosition();
             }
         }
     }
