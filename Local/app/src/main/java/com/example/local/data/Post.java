@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Entity
 public class Post {
-    @PrimaryKey
+    @PrimaryKey (autoGenerate = true)
     public int pid;
     @ColumnInfo (name = "uid")
     public int uid;

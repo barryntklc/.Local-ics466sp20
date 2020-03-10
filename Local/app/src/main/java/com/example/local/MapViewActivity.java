@@ -22,9 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.local.data.AppDatabase;
-import com.example.local.data.AppDatabaseAsyncClass;
 import com.example.local.data.Post;
-import com.example.local.data.PostDao;
+import com.example.local.data.RefreshMapAsyncClass;
+import com.example.local.data.SubmitPostAsyncClass;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
@@ -66,7 +67,7 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
         this.setSupportActionBar(new_toolbar);
         this.getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "local-db").build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "local-db").fallbackToDestructiveMigration().build();
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
@@ -258,10 +259,10 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
                 );
                 Log.i("Time", post_time.toString());
 
-                Toast.makeText(this, "Post Submitted!", Toast.LENGTH_SHORT).show();
-
-                AppDatabaseAsyncClass n = new AppDatabaseAsyncClass(1024, post_text, post_location, post_time);
+                SubmitPostAsyncClass n = new SubmitPostAsyncClass(1024, post_text, post_location, post_time);
                 n.execute();
+
+                Toast.makeText(this, "Post Submitted!", Toast.LENGTH_SHORT).show();
 
 //                db.postDao().
                 //settings
@@ -272,6 +273,9 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
 
                 //if return to position set
 //                animateToCurrentPosition();
+
+                RefreshMapAsyncClass m = new RefreshMapAsyncClass();
+                m.execute();
             }
         }
     }
