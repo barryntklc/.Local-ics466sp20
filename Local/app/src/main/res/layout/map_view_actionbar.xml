@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:text="@string/actionbar_default"
         android:textAlignment="center"
-        android:textColor="@color/colorText"
+        android:textColor="@color/colorTextWhite"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

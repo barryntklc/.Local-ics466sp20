@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".NewPostActivity">
 
-    <include layout="@layout/custom_toolbar" />
+    <include layout="@layout/map_view_actionbar" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
