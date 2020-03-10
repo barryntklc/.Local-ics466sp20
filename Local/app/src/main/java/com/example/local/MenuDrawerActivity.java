@@ -31,7 +31,7 @@ public class MenuDrawerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu_drawer);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.new_post_button);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,4 +66,8 @@ public class MenuDrawerActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+//    public void show() {
+//        this.
+//    }
 }

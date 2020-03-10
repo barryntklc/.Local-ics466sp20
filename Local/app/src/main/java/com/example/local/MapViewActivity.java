@@ -1,12 +1,14 @@
 package com.example.local;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -14,6 +16,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -23,9 +27,21 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
+    public LocalDatabase db = new LocalDatabase();
+
     private GoogleMap mMap;
+
+    private MenuDrawerActivity dl;
+    private ActionBarDrawerToggle t;
+
+    private Toolbar this_toolbar;
+
+    public static final int NEW_POST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,33 +49,30 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
         setContentView(R.layout.activity_map_view);
 
         Toolbar new_toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        this_toolbar = findViewById(R.id.toolbar);
+//        ImageButton menubtn = (ImageButton) this_toolbar.getChildAt(0);
+//        menubtn.setImageResource(R.drawable.ic_back_button);
+
+        TextView textvw = (TextView) this_toolbar.getChildAt(1);
+        textvw.setText("Explore");
 //        getSupportActionBar().setDisplayShowTitleEnabled(false);
         this.setSupportActionBar(new_toolbar);
         this.getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-//
 
-
-//        Places.initialize(getApplicationContext(), "AIzaSyCptZ-yzs0EDHtolndEiKk7v0SsN8x5Vzo");
-//        PlacesClient placesClient = Places.createClient(this);
-
-
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-//        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        NavigationUI.setupWithNavController(toolbar, navController);
-
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+//        t = new ActionBarDrawerToggle(this, R.layout.content_menu_drawer, );
 
+//        dl = new DrawerLayout(this, R.layout.content_menu_drawer);
+        MenuDrawerActivity dl = new MenuDrawerActivity();
+//        dl.show
     }
-
 
     /**
      * Manipulates the map once available.
@@ -97,14 +110,12 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
         Log.i("onMapReady", "width: " + width);
         Log.i("onMapReady", "height: " + height);
 
-        setToCurrentPosition();
-
-
+        moveToCurrentPosition();
     }
 
-    private void setToCurrentPosition() {
-        Criteria c = new Criteria();
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+    private void moveToCurrentPosition() {
+        Criteria cri = new Criteria();
+        LocationManager locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    Activity#requestPermissions
@@ -115,19 +126,50 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
             // for Activity#requestPermissions for more details.
             return;
         }
-        Location l = lm.getLastKnownLocation(lm.getBestProvider(c, false));
+        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
 
-        if (l != null) {
+        if (loc != null) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(l.getLatitude(), l.getLongitude()))      // Sets the center of the map to location user
+                    .target(new LatLng(loc.getLatitude(), loc.getLongitude()))      // Sets the center of the map to location user
                     .zoom(17)                   // Sets the zoom
-//                .bearing(90)                // Sets the orientation of the camera to east
-//                .tilt(40)                   // Sets the tilt of the camera to 30 degrees
                     .build();                   // Creates a CameraPosition from the builder
-            mMap.setPadding(1080, 0, 0, 0);
-//        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            mMap.setPadding(512, 0, 0, 0);
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+//          mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
         }
+
+//        mMap.addM
+        //https://developers.google.com/maps/documentation/urls/guide
+    }
+
+    private void animateToCurrentPosition() {
+        Criteria cri = new Criteria();
+        LocationManager locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    Activity#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for Activity#requestPermissions for more details.
+            return;
+        }
+        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
+
+        if (loc != null) {
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(loc.getLatitude(), loc.getLongitude()))      // Sets the center of the map to location user
+                    .zoom(17)                   // Sets the zoom
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.setPadding(512, 0, 0, 0);
+//            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+
+//        mMap.addM
+        //https://developers.google.com/maps/documentation/urls/guide
     }
 
 //    @Override
@@ -141,5 +183,83 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
+    }
+
+    public void optionsButtonClicked(View view) {
+        Log.i("Map-Options", "Options button clicked!");
+    }
+
+    public void menuButtonClicked(View view) {
+        Log.i("Map-Menu", "Menu button clicked!");
+
+//        this.dl.show();
+    }
+
+    public void newPostButtonClicked(View view) {
+        Intent i = new Intent(this, NewPostActivity.class);
+        startActivityForResult(i, NEW_POST);
+    }
+
+    public LatLng getCurrentLatLng() {
+        Criteria cri = new Criteria();
+        LocationManager locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    Activity#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for Activity#requestPermissions for more details.
+//            return;
+        }
+        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
+        LatLng ll = new LatLng(loc.getLatitude(), loc.getLongitude());
+        return ll;
+    }
+
+    public Date getCurrentTime() {
+        Date currentTime = Calendar.getInstance().getTime();
+        return currentTime;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == NEW_POST) {
+            if (resultCode == RESULT_OK) {
+                //get post text
+                String post_text = data.getStringExtra(NewPostActivity.POST_REPLY);
+
+                //get current location
+                LatLng post_location = getCurrentLatLng();
+
+                //get current time
+                Date post_time = getCurrentTime();
+
+                Log.i("New-Post", "Creating new post:\n"
+                        + "\tLocation: "
+                        + post_location.toString()
+                        + "\n"
+                        + "\tTime: "
+                        + post_time.toString()
+                        + "\n"
+                        + "\tText:\n"
+                        + post_text
+                );
+                Log.i("Time", post_time.toString());
+
+                Toast.makeText(this, "Post Submitted!", Toast.LENGTH_SHORT).show();
+
+                //settings
+                //  after making a new post
+                //      1. do nothing
+                //      2. animate to current position
+                //      3. move to current position
+
+                //if return to position set
+                animateToCurrentPosition();
+            }
+        }
     }
 }

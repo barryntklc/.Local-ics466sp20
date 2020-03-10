@@ -6,7 +6,37 @@
     android:layout_height="match_parent"
     tools:context=".NewPostActivity">
 
-    <include layout="@layout/map_view_actionbar" />
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/custom_toolbar"
+        />
+
+    <EditText
+        android:id="@+id/post_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        android:singleLine="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <Button
+        android:id="@+id/post_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Submit"
+        android:background="@color/colorPrimaryBright"
+        android:textColor="@color/colorTextWhite"
+        android:onClick="returnReply"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/post_text" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,7 +8,20 @@
     android:layout_height="match_parent"
     tools:context=".MapViewActivity" >
 
-    <include layout="@layout/map_view_actionbar" />
+    <include
+        android:id="@id/toolbar"
+        layout="@layout/custom_toolbar"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/new_post_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:onClick="newPostButtonClicked"
+        app:backgroundTint="@color/colorPrimaryBright"
+        app:srcCompat="@drawable/ic_post_button" />
 
 <!--    <androidx.appcompat.widget.Toolbar-->
 <!--        android:id="@+id/toolbar"-->

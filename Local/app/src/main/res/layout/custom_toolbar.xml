@@ -22,29 +22,13 @@
     app:layout_constraintTop_toTopOf="parent"
     tools:showIn="@layout/activity_new_post">
 
-
-    <!--        <android.support.constraint.ConstraintLayout-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content">-->
-
-    <!--            <ImageButton-->
-    <!--                android:id="@+id/menu_button"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="0dp"-->
-    <!--                android:src="@drawable/ic_menu_button"-->
-    <!--                tools:layout_editor_absoluteX="5dp"-->
-    <!--                tools:layout_editor_absoluteY="3dp"-->
-    <!--                android:background="@null"-->
-    <!--                app:layout_constraintDimensionRatio="1:1"/>-->
-
-    <!--        </android.support.constraint.ConstraintLayout>-->
-
     <ImageButton
         android:id="@+id/menu_button"
         android:layout_width="56dp"
         android:layout_height="match_parent"
         android:background="@null"
         android:src="@drawable/ic_menu_button"
+        android:onClick="menuButtonClicked"
         tools:layout_editor_absoluteX="5dp"
         tools:layout_editor_absoluteY="3dp" />
 
@@ -57,7 +41,6 @@
         android:textColor="@color/colorTextWhite"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="18dp" />
 
@@ -67,6 +50,7 @@
         android:layout_height="match_parent"
         android:background="@null"
         android:src="@drawable/ic_more_button"
+        android:onClick="optionsButtonClicked"
         app:layout_constraintEnd_toEndOf="parent"
         tools:layout_editor_absoluteX="5dp"
         tools:layout_editor_absoluteY="3dp" />

@@ -19,6 +19,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:onClick="newPostButtonClicked"
         app:headerLayout="@layout/nav_header_menu_drawer"
         app:itemTextColor="@color/colorTextWhite"
         app:menu="@menu/activity_menu_drawer_drawer" />
