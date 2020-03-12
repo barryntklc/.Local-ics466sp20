@@ -184,6 +184,9 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
         }
 //        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
         Location loc = locm.getLastKnownLocation("network");
+        if (loc == null) {
+            loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
+        }
 //        Location loc = locm.getLastKnownLocation(locm.g);
 //        locm.getProvider("gps")
 
@@ -275,6 +278,9 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
         }
 //        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
         Location loc = locm.getLastKnownLocation("network");
+        if (loc == null) {
+            loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
+        }
         LatLng ll = new LatLng(loc.getLatitude(), loc.getLongitude());
         return ll;
     }
