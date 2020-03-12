@@ -13,67 +13,39 @@
         layout="@layout/custom_toolbar"
         />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/new_post_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:onClick="newPostButtonClicked"
-        app:backgroundTint="@color/colorPrimaryBright"
-        app:srcCompat="@drawable/ic_post_button" />
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-<!--    <androidx.appcompat.widget.Toolbar-->
-<!--        android:id="@+id/toolbar"-->
-<!--        android:layout_height="@dimen/abc_action_bar_default_height_material"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:minHeight="@dimen/abc_action_bar_default_height_material"-->
-<!--        android:background="?attr/colorPrimary"-->
-<!--        android:text="">-->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/new_post_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            app:fabCustomSize="70dp"
+            android:onClick="newPostButtonClicked"
+            app:backgroundTint="@color/colorPrimaryBright"
+            app:srcCompat="@drawable/ic_post_button" />
 
-<!--        <item-->
-<!--            android:id="@+id/action_favorite"-->
-<!--            android:orderInCategory="300"-->
-<!--            android:title="User"-->
-<!--            android:icon="@drawable/ic_favorite"-->
-<!--            app:showAsAction="ifRoom"></item>-->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/center_camera_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:layout_marginRight="8dp"
+            android:tint="@color/colorPrimary"
+            android:onClick="centerCameraButtonClicked"
+            android:layout_gravity="end"
+            app:backgroundTint="@color/colorTextWhite"
+            app:fabCustomSize="40dp"
+            app:layout_anchor="@+id/new_post_button"
+            app:layout_anchorGravity="right"
+            app:layout_constraintRight_toRightOf="parent"
+            app:useCompatPadding="true"
+            app:srcCompat="@drawable/ic_target_button" />
 
-<!--        <ImageButton-->
-<!--            android:layout_width="dimen"-->
-<!--            android:layout_height="match_parent"-->
-
-<!--        <ImageView-->
-<!--            android:id="@+id/menu_button"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@drawable/ic_menu_button"-->
-<!--            android:tint="@color/colorText"-->
-<!--            tools:layout_conversion_absoluteHeight="0dp"-->
-<!--            tools:layout_conversion_absoluteWidth="0dp"-->
-<!--            tools:layout_editor_absoluteX="0dp"-->
-<!--            tools:layout_editor_absoluteY="0dp"-->
-<!--            tools:src="@drawable/ic_action_name" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/title_text"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="MAP"-->
-<!--            android:textColor="@color/colorText"-->
-<!--            tools:layout_conversion_absoluteHeight="0dp"-->
-<!--            tools:layout_editor_absoluteY="0dp"-->
-<!--            tools:layout_editor_absoluteX="0dp"-->
-<!--            tools:layout_conversion_absoluteWidth="0dp"/>-->
-
-
-
-<!--&lt;!&ndash;        <item&ndash;&gt;-->
-<!--&lt;!&ndash;            android:id="@+id/action_favorite"&ndash;&gt;-->
-<!--&lt;!&ndash;            android:orderInCategory="300"&ndash;&gt;-->
-<!--&lt;!&ndash;            android:title="User"&ndash;&gt;-->
-<!--&lt;!&ndash;            android:icon="@drawable/ic_action_name"&ndash;&gt;-->
-<!--&lt;!&ndash;            app:showAsAction="ifRoom"/>&ndash;&gt;-->
-
-<!--    </androidx.appcompat.widget.Toolbar>-->
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </fragment>

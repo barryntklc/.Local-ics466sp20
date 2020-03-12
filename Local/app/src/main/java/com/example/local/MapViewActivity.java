@@ -15,22 +15,26 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.local.data.AppDatabase;
 import com.example.local.data.Post;
-import com.example.local.data.RefreshMapAsyncClass;
+import com.example.local.data.RefreshMapThread;
 import com.example.local.data.SubmitPostAsyncClass;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -41,14 +45,20 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
     //https://developer.android.com/training/data-storage/room
     public static AppDatabase db;
 
-    private GoogleMap mMap;
+    public static GoogleMap mMap;
 
     private MenuDrawerActivity dl;
     private ActionBarDrawerToggle t;
 
     private Toolbar this_toolbar;
 
+    public static RefreshMapThread a;
+//    public static RefreshMapAsyncClass a;
+
     public static final int NEW_POST = 1;
+
+    final Handler mHandler = new Handler();
+    private Thread mUiThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +71,14 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
 //        ImageButton menubtn = (ImageButton) this_toolbar.getChildAt(0);
 //        menubtn.setImageResource(R.drawable.ic_back_button);
 
-        TextView textvw = (TextView) this_toolbar.getChildAt(1);
+//        TextView textvw = (TextView) this_toolbar.getChildAt(1);
+        TextView textvw = (TextView) this_toolbar.findViewById(R.id.toolbar_title);
         textvw.setText("Explore");
+
+//        ImageButton optbtn = (ImageButton) this_toolbar.getChildAt(2);
+//        ImageButton optbtn = (ImageButton) this_toolbar.findViewById(R.id.options_button);
+//        optbtn.setVisibility(View.INVISIBLE);
+
 //        getSupportActionBar().setDisplayShowTitleEnabled(false);
         this.setSupportActionBar(new_toolbar);
         this.getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -78,7 +94,9 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
 
 //        t = new ActionBarDrawerToggle(this, R.layout.content_menu_drawer, );
 
-//        dl = new DrawerLayout(this, R.layout.content_menu_drawer);
+////        dl = new DrawerLayout(this, R.layout.content_menu_drawer);
+//        mmap.
+
         MenuDrawerActivity dl = new MenuDrawerActivity();
 //        dl.show
     }
@@ -94,12 +112,17 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.i("onMapReady", "Map is ready.");
+
         mMap = googleMap;
 
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener((GoogleMap.OnMyLocationButtonClickListener) this);
         mMap.setOnMyLocationClickListener((GoogleMap.OnMyLocationClickListener) this);
 
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+
+        mMap.setMaxZoomPreference(100);
         // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -112,17 +135,41 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
 
 //        this.mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 13));
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels;
-        Log.i("onMapReady", "width: " + width);
-        Log.i("onMapReady", "height: " + height);
+
+
+//        DisplayMetrics displayMetrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//        int height = displayMetrics.heightPixels;
+//        int width = displayMetrics.widthPixels;
+//        Log.i("onMapReady", "width: " + width);
+//        Log.i("onMapReady", "height: " + height);
+
+//        a = new RefreshMapAsyncClass();
+//        a.execute();
+
+        a = new RefreshMapThread(this);
+        a.start();
 
         moveToCurrentPosition();
     }
 
-    private void moveToCurrentPosition() {
+    public static void addMarker(Post p) {
+//        MapView m = (MapView) findViewById(R.id.map);
+//        m.getMapAsync().add
+
+
+        MapViewActivity.mMap.addMarker(new MarkerOptions().position(p.latLng).title(p.postText));
+
+//        MapView m = (MapView) findViewById(R.id.map);
+//        mMap.addMarker()
+    }
+
+//    @Override
+//    public final void runOnUiThread(Runnable action) {
+//        action.run();
+//    }
+
+    private Location getLocation() {
         Criteria cri = new Criteria();
         LocationManager locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -133,52 +180,50 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for Activity#requestPermissions for more details.
-            return;
+//            return;
         }
-        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
+//        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
+        Location loc = locm.getLastKnownLocation("network");
+//        Location loc = locm.getLastKnownLocation(locm.g);
+//        locm.getProvider("gps")
+
+        Log.i("best-provider", locm.getBestProvider(cri, false));
+
+        List<String> providers = locm.getAllProviders();
+        for (String s : providers) {
+            Log.i("provider", s);
+        }
+
+        return loc;
+    }
+
+    private void moveToCurrentPosition() {
+        Location loc = getLocation();
 
         if (loc != null) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(loc.getLatitude(), loc.getLongitude()))      // Sets the center of the map to location user
-                    .zoom(17)                   // Sets the zoom
+                    .zoom(18)                   // Sets the zoom
                     .build();                   // Creates a CameraPosition from the builder
-            mMap.setPadding(512, 0, 0, 0);
+            mMap.setPadding(0, 0, 0, 0);
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//          mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+//            mMap.addMarker(new MarkerOptions().position(new LatLng(loc.getLatitude(), loc.getLongitude())).title("It's Me!"));
 
         }
-
-//        mMap.addM
-        //https://developers.google.com/maps/documentation/urls/guide
     }
 
     private void animateToCurrentPosition() {
-        Criteria cri = new Criteria();
-        LocationManager locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    Activity#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for Activity#requestPermissions for more details.
-            return;
-        }
-        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
+        Location loc = getLocation();
 
         if (loc != null) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(loc.getLatitude(), loc.getLongitude()))      // Sets the center of the map to location user
-                    .zoom(17)                   // Sets the zoom
+                    .zoom(18)                   // Sets the zoom
                     .build();                   // Creates a CameraPosition from the builder
-            mMap.setPadding(512, 0, 0, 0);
-//            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            mMap.setPadding(0, 0, 0, 0);
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
-
-//        mMap.addM
-        //https://developers.google.com/maps/documentation/urls/guide
     }
 
 //    @Override
@@ -196,6 +241,8 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
 
     public void optionsButtonClicked(View view) {
         Log.i("Map-Options", "Options button clicked!");
+
+        animateToCurrentPosition();
     }
 
     public void menuButtonClicked(View view) {
@@ -207,6 +254,10 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
     public void newPostButtonClicked(View view) {
         Intent i = new Intent(this, NewPostActivity.class);
         startActivityForResult(i, NEW_POST);
+    }
+
+    public void centerCameraButtonClicked(View view) {
+        animateToCurrentPosition();
     }
 
     public LatLng getCurrentLatLng() {
@@ -222,7 +273,8 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
             // for Activity#requestPermissions for more details.
 //            return;
         }
-        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
+//        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
+        Location loc = locm.getLastKnownLocation("network");
         LatLng ll = new LatLng(loc.getLatitude(), loc.getLongitude());
         return ll;
     }
@@ -274,8 +326,8 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
                 //if return to position set
 //                animateToCurrentPosition();
 
-                RefreshMapAsyncClass m = new RefreshMapAsyncClass();
-                m.execute();
+//                RefreshMapAsyncClass m = new RefreshMapAsyncClass();
+//                m.execute();
             }
         }
     }

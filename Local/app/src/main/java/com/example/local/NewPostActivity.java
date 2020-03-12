@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.hardware.Camera;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,13 +31,13 @@ public class NewPostActivity extends AppCompatActivity {
 
 //        this_toolbar.findViewById(this.this_toolbar.id.options_button);
         this_toolbar = findViewById(R.id.toolbar);
-        ImageButton menubtn = (ImageButton) this_toolbar.getChildAt(0);
+        ImageButton menubtn = (ImageButton) this_toolbar.findViewById(R.id.menu_button);
         menubtn.setImageResource(R.drawable.ic_arrow_back_button);
 
-        TextView textvw = (TextView) this_toolbar.getChildAt(1);
+        TextView textvw = (TextView) this_toolbar.findViewById(R.id.toolbar_title);
         textvw.setText("New Post");
 
-        ImageButton optbtn = (ImageButton) this_toolbar.getChildAt(2);
+        ImageButton optbtn = (ImageButton) this_toolbar.findViewById(R.id.options_button);
         optbtn.setVisibility(View.INVISIBLE);
     }
 
@@ -61,4 +62,31 @@ public class NewPostActivity extends AppCompatActivity {
             Toast.makeText(this, "You cannot submit an empty post!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void addPhotoButtonClicked(View view) {
+        Toast.makeText(this, "Add Photo option not yet implemented.", Toast.LENGTH_SHORT).show();
+    }
+
+//    private boolean safeCameraOpen(int id) {
+//        boolean qOpened = false;
+//
+//        try {
+//            releaseCameraAndPreview();
+//            camera = Camera.open(id);
+//            qOpened = (camera != null);
+//        } catch (Exception e) {
+//            Log.e(getString(R.string.app_name), "failed to open Camera");
+//            e.printStackTrace();
+//        }
+//
+//        return qOpened;
+//    }
+//
+//    private void releaseCameraAndPreview() {
+//        preview.setCamera(null);
+//        if (camera != null) {
+//            camera.release();
+//            camera = null;
+//        }
+//    }
 }

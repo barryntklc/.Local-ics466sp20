@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:background="?attr/colorPrimary"
+    android:background="@color/colorPrimary"
     android:contentInsetStart="0dp"
     android:contentInsetLeft="0dp"
     android:contentInsetEnd="0dp"
@@ -22,36 +22,46 @@
     app:layout_constraintTop_toTopOf="parent"
     tools:showIn="@layout/activity_new_post">
 
-    <ImageButton
-        android:id="@+id/menu_button"
-        android:layout_width="56dp"
-        android:layout_height="match_parent"
-        android:background="@null"
-        android:src="@drawable/ic_menu_button"
-        android:onClick="menuButtonClicked"
-        tools:layout_editor_absoluteX="5dp"
-        tools:layout_editor_absoluteY="3dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/actionbar_default"
-        android:textAlignment="center"
-        android:textColor="@color/colorTextWhite"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="18dp" />
+        <ImageButton
+            android:id="@+id/menu_button"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:onClick="menuButtonClicked"
+            android:src="@drawable/ic_menu_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="5dp"
+            tools:layout_editor_absoluteY="3dp" />
 
-    <ImageButton
-        android:id="@+id/options_button"
-        android:layout_width="56dp"
-        android:layout_height="match_parent"
-        android:background="@null"
-        android:src="@drawable/ic_more_button"
-        android:onClick="optionsButtonClicked"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteX="5dp"
-        tools:layout_editor_absoluteY="3dp" />
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/actionbar_default"
+            android:textAlignment="center"
+            android:textColor="@color/colorTextWhite"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/menu_button"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/options_button"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:onClick="optionsButtonClicked"
+            android:src="@drawable/ic_more_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.appcompat.widget.Toolbar>

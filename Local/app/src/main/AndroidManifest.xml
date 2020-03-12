@@ -16,10 +16,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+        <activity
+            android:name=".SettingsViewActivity"
+            android:label="@string/title_activity_settings_view"></activity>
+        <activity android:name=".ViewPostActivity" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <activity
             android:name=".ui.login.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+            android:label="@string/title_activity_login" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -45,6 +53,7 @@
             android:name=".MenuDrawerActivity"
             android:label="@string/title_activity_menu_drawer"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".NewPostActivity"></activity>
+        <activity android:name=".NewPostActivity" />
     </application>
+
 </manifest>
