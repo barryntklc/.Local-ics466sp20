@@ -5,21 +5,23 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.room.Room;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,18 +31,20 @@ import com.example.local.data.RefreshMapThread;
 import com.example.local.data.SubmitPostAsyncClass;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
+import static com.example.local.R.color.colorPrimary;
+
+public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
     //https://developer.android.com/training/data-storage/room
     public static AppDatabase db;
@@ -51,35 +55,61 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
     private ActionBarDrawerToggle t;
 
     private Toolbar this_toolbar;
+    private FloatingActionButton locationController;
 
     public static RefreshMapThread a;
-//    public static RefreshMapAsyncClass a;
 
     public static final int NEW_POST = 1;
 
     final Handler mHandler = new Handler();
     private Thread mUiThread;
 
+    private Handler locationLockHandler = new Handler();
+
+    public boolean lockMap = false;
+
+//    public LocationManager locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map_view);
+        setContentView(R.layout.activity_explore);
+
+        //https://stackoverflow.com/questions/22606977/how-can-i-get-button-pressed-time-when-i-holding-button-on
+        locationController = findViewById(R.id.center_camera_button);
+        locationController.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        locationLockHandler.postDelayed(locationLockToggle, 1250);
+                        Log.i("lockMap", "pressed");
+                        if (lockMap != true) {
+                            animateToCurrentPosition();
+                        }
+                        if (lockMap == true) {
+                            lockMap = false;
+                            Log.i("lockMap", String.valueOf(lockMap));
+
+                            locationController.setColorFilter(getResources().getColor(R.color.colorPrimary));
+                            locationController.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorTextWhite)));
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        locationLockHandler.removeCallbacks(locationLockToggle);
+                        Log.i("lockMap", "released");
+                        break;
+                }
+                return false;
+            }
+        });
 
         Toolbar new_toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         this_toolbar = findViewById(R.id.toolbar);
-//        ImageButton menubtn = (ImageButton) this_toolbar.getChildAt(0);
-//        menubtn.setImageResource(R.drawable.ic_back_button);
 
-//        TextView textvw = (TextView) this_toolbar.getChildAt(1);
-        TextView textvw = (TextView) this_toolbar.findViewById(R.id.toolbar_title);
+        TextView textvw = this_toolbar.findViewById(R.id.toolbar_title);
         textvw.setText("Explore");
 
-//        ImageButton optbtn = (ImageButton) this_toolbar.getChildAt(2);
-//        ImageButton optbtn = (ImageButton) this_toolbar.findViewById(R.id.options_button);
-//        optbtn.setVisibility(View.INVISIBLE);
-
-//        getSupportActionBar().setDisplayShowTitleEnabled(false);
         this.setSupportActionBar(new_toolbar);
         this.getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -92,14 +122,23 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-//        t = new ActionBarDrawerToggle(this, R.layout.content_menu_drawer, );
-
-////        dl = new DrawerLayout(this, R.layout.content_menu_drawer);
-//        mmap.
-
         MenuDrawerActivity dl = new MenuDrawerActivity();
-//        dl.show
     }
+
+    Runnable locationLockToggle = new Runnable() {
+        @Override
+        public void run() {
+            if (lockMap == false) {
+                lockMap = true;
+                Log.i("lockMap", String.valueOf(lockMap));
+
+                locationController.setColorFilter(getResources().getColor(R.color.colorTextWhite));
+                locationController.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+            }
+        }
+    };
+
+
 
     /**
      * Manipulates the map once available.
@@ -123,29 +162,6 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
         mMap.setMaxZoomPreference(100);
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-        //sources
-        //https://stackoverflow.com/questions/18425141/android-google-maps-api-v2-zoom-to-current-location
-
-
-
-//        this.mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 13));
-
-
-
-//        DisplayMetrics displayMetrics = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-//        int height = displayMetrics.heightPixels;
-//        int width = displayMetrics.widthPixels;
-//        Log.i("onMapReady", "width: " + width);
-//        Log.i("onMapReady", "height: " + height);
-
-//        a = new RefreshMapAsyncClass();
-//        a.execute();
 
         a = new RefreshMapThread(this);
         a.start();
@@ -154,20 +170,8 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
     }
 
     public static void addMarker(Post p) {
-//        MapView m = (MapView) findViewById(R.id.map);
-//        m.getMapAsync().add
-
-
-        MapViewActivity.mMap.addMarker(new MarkerOptions().position(p.latLng).title(p.postText));
-
-//        MapView m = (MapView) findViewById(R.id.map);
-//        mMap.addMarker()
+        ExploreActivity.mMap.addMarker(new MarkerOptions().position(p.latLng).title(p.postText));
     }
-
-//    @Override
-//    public final void runOnUiThread(Runnable action) {
-//        action.run();
-//    }
 
     private Location getLocation() {
         Criteria cri = new Criteria();
@@ -260,7 +264,7 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
     }
 
     public void centerCameraButtonClicked(View view) {
-        animateToCurrentPosition();
+
     }
 
     public LatLng getCurrentLatLng() {
@@ -337,4 +341,9 @@ public class MapViewActivity extends AppCompatActivity implements GoogleMap.OnMy
             }
         }
     }
+
+//    @Override
+//    public void onLocationChanged(Location location) {
+//
+//    }
 }

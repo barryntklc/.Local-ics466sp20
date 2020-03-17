@@ -2,7 +2,7 @@ package com.example.local.data;
 
 import android.os.AsyncTask;
 
-import com.example.local.MapViewActivity;
+import com.example.local.ExploreActivity;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Date;
@@ -29,7 +29,7 @@ public class SubmitPostAsyncClass extends AsyncTask <Void, Void, String> {
         p.postText = this.post_text;
         p.dateTime = this.post_time;
 
-        MapViewActivity.db.postDao().insert(p);
+        ExploreActivity.db.postDao().insert(p);
 
         return null;
     }

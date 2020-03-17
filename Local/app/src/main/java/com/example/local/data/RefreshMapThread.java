@@ -2,7 +2,8 @@ package com.example.local.data;
 
 import android.util.Log;
 
-import com.example.local.MapViewActivity;
+import com.example.local.ExploreActivity;
+import com.example.local.ExploreActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +12,9 @@ public class RefreshMapThread extends Thread {
     private ArrayList<Post> mapItems = new ArrayList<Post>();
     private ArrayList<Post> retrievedPostsToBeAdded = new ArrayList<Post>();
 
-    MapViewActivity mv;
+    ExploreActivity mv;
 
-    public RefreshMapThread(MapViewActivity mv) {
+    public RefreshMapThread(ExploreActivity mv) {
         this.mv = mv;
     }
 
@@ -23,7 +24,7 @@ public class RefreshMapThread extends Thread {
 
         while(true) {
             try {
-                List<Post> retrievedPosts = MapViewActivity.db.postDao().getAll();
+                List<Post> retrievedPosts = ExploreActivity.db.postDao().getAll();
                 for (Post retrievedPost : retrievedPosts) {
                     if (!inCoords(retrievedPost)) {
                         mapItems.add(retrievedPost);

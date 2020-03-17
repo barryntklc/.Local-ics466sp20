@@ -6,7 +6,7 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapViewActivity" >
+    tools:context=".ExploreActivity" >
 
     <include
         android:id="@id/toolbar"
@@ -26,7 +26,7 @@
             android:layout_margin="@dimen/fab_margin"
             app:fabCustomSize="70dp"
             android:onClick="newPostButtonClicked"
-            app:backgroundTint="@color/colorPrimaryBright"
+            app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@drawable/ic_post_button" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -36,15 +36,15 @@
             android:layout_marginBottom="32dp"
             android:layout_marginRight="8dp"
             android:tint="@color/colorPrimary"
-            android:onClick="centerCameraButtonClicked"
             android:layout_gravity="end"
+            android:onClick="centerCameraButtonClicked"
             app:backgroundTint="@color/colorTextWhite"
             app:fabCustomSize="40dp"
             app:layout_anchor="@+id/new_post_button"
             app:layout_anchorGravity="right"
             app:layout_constraintRight_toRightOf="parent"
             app:useCompatPadding="true"
-            app:srcCompat="@drawable/ic_target_button" />
+            app:srcCompat="@drawable/ic_center_location" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

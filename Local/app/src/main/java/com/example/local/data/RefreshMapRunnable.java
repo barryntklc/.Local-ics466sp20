@@ -9,7 +9,7 @@ import android.util.Log;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import com.example.local.MapViewActivity;
+import com.example.local.ExploreActivity;
 import com.example.local.R;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -21,9 +21,9 @@ import java.util.ArrayList;
 public class RefreshMapRunnable implements Runnable {
 
     ArrayList<Post> posts;
-    MapViewActivity mv;
+    ExploreActivity mv;
 
-    public RefreshMapRunnable(ArrayList<Post> posts, MapViewActivity mv) {
+    public RefreshMapRunnable(ArrayList<Post> posts, ExploreActivity mv) {
         this.posts = posts;
         this.mv = mv;
     }
