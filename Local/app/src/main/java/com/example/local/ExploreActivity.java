@@ -16,9 +16,11 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,6 +31,7 @@ import com.example.local.data.AppDatabase;
 import com.example.local.data.Post;
 import com.example.local.data.RefreshMapThread;
 import com.example.local.data.SubmitPostAsyncClass;
+import com.example.local.data.ExploreLocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -66,28 +69,77 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
 
     private Handler locationLockHandler = new Handler();
 
-    public boolean lockMap = false;
+    public boolean lockMap = true;
 
-//    public LocationManager locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+    public LocationManager locm;
+    public LocationListener locl;
+
+    public Bundle savedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explore);
 
+        locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locl = new ExploreLocationListener(this);
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    Activity#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for Activity#requestPermissions for more details.
+            return;
+        }
+        locm.requestLocationUpdates("network", 1L, 1f, locl);
+
         //https://stackoverflow.com/questions/22606977/how-can-i-get-button-pressed-time-when-i-holding-button-on
+//        locationController = findViewById(R.id.center_camera_button);
+//        locationController.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                switch(event.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        locationLockHandler.postDelayed(locationLockToggle, 1250);
+//                        Log.i("lockMap", "pressed");
+//                        if (lockMap != true) {
+//                            animateToCurrentPosition();
+//                        }
+//                        if (lockMap == true) {
+//                            lockMap = false;
+//                            Log.i("lockMap", String.valueOf(lockMap));
+//
+//                            locationController.setColorFilter(getResources().getColor(R.color.colorPrimary));
+//                            locationController.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorTextWhite)));
+//                        }
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        locationLockHandler.removeCallbacks(locationLockToggle);
+//                        Log.i("lockMap", "released");
+//                        break;
+//                }
+//                return false;
+//            }
+//        });
+
         locationController = findViewById(R.id.center_camera_button);
         locationController.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        locationLockHandler.postDelayed(locationLockToggle, 1250);
+//                        locationLockHandler.postDelayed(locationLockToggle, 1250);
                         Log.i("lockMap", "pressed");
                         if (lockMap != true) {
+                            lockMap = true;
+                            Log.i("lockMap", String.valueOf(lockMap));
+
+                            locationController.setColorFilter(getResources().getColor(R.color.colorTextWhite));
+                            locationController.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
                             animateToCurrentPosition();
-                        }
-                        if (lockMap == true) {
+                        } else if (lockMap == true) {
                             lockMap = false;
                             Log.i("lockMap", String.valueOf(lockMap));
 
@@ -96,13 +148,28 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        locationLockHandler.removeCallbacks(locationLockToggle);
+//                        locationLockHandler.removeCallbacks(locationLockToggle);
                         Log.i("lockMap", "released");
                         break;
                 }
                 return false;
             }
         });
+
+        if (savedInstanceState != null) {
+            this.lockMap = savedInstanceState.getBoolean("lockMap");
+
+            this.savedInstanceState = savedInstanceState;
+
+        }
+
+        if (this.lockMap) {
+            locationController.setColorFilter(getResources().getColor(R.color.colorTextWhite));
+            locationController.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+        } else {
+            locationController.setColorFilter(getResources().getColor(R.color.colorPrimary));
+            locationController.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorTextWhite)));
+        }
 
         Toolbar new_toolbar = (Toolbar) findViewById(R.id.toolbar);
         this_toolbar = findViewById(R.id.toolbar);
@@ -125,20 +192,28 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
         MenuDrawerActivity dl = new MenuDrawerActivity();
     }
 
-    Runnable locationLockToggle = new Runnable() {
-        @Override
-        public void run() {
-            if (lockMap == false) {
-                lockMap = true;
-                Log.i("lockMap", String.valueOf(lockMap));
-
-                locationController.setColorFilter(getResources().getColor(R.color.colorTextWhite));
-                locationController.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
-            }
-        }
-    };
-
-
+//    Runnable locationLockToggle = new Runnable() {
+//        @Override
+//        public void run() {
+//        if (lockMap == false) {
+//            lockMap = true;
+//            Log.i("lockMap", String.valueOf(lockMap));
+//
+//            locationController.setColorFilter(getResources().getColor(R.color.colorTextWhite));
+//            locationController.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+//        }
+//        }
+//    };
+//
+//    public void llt() {
+//        if (lockMap == false) {
+//            lockMap = true;
+//            Log.i("lockMap", String.valueOf(lockMap));
+//
+//            locationController.setColorFilter(getResources().getColor(R.color.colorTextWhite));
+//            locationController.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+//        }
+//    }
 
     /**
      * Manipulates the map once available.
@@ -166,7 +241,31 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
         a = new RefreshMapThread(this);
         a.start();
 
-        moveToCurrentPosition();
+        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+
+            @Override
+            public void onCameraMoveStarted(int i) {
+                if ((i == REASON_GESTURE) || (i == REASON_API_ANIMATION)) {
+                    if (lockMap == true) {
+                        lockMap = false;
+
+                        locationController.setColorFilter(getResources().getColor(R.color.colorPrimary));
+                        locationController.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorTextWhite)));
+                    }
+                }
+            }
+        });
+
+        if (this.savedInstanceState != null) {
+            Bundle cameraPositionData = savedInstanceState.getBundle("cameraLocation");
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(cameraPositionData.getDouble("latitude"), cameraPositionData.getDouble("longitude")))      // Sets the center of the map to location user
+                    .zoom(cameraPositionData.getFloat("zoom"))                   // Sets the zoom
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        } else {
+            moveToCurrentPosition();
+        }
     }
 
     public static void addMarker(Post p) {
@@ -175,7 +274,7 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
 
     private Location getLocation() {
         Criteria cri = new Criteria();
-        LocationManager locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        LocationManager locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    Activity#requestPermissions
@@ -186,13 +285,10 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
             // for Activity#requestPermissions for more details.
 //            return;
         }
-//        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
         Location loc = locm.getLastKnownLocation("network");
         if (loc == null) {
             loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
         }
-//        Location loc = locm.getLastKnownLocation(locm.g);
-//        locm.getProvider("gps")
 
         Log.i("best-provider", locm.getBestProvider(cri, false));
 
@@ -212,23 +308,18 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
                     .target(new LatLng(loc.getLatitude(), loc.getLongitude()))      // Sets the center of the map to location user
                     .zoom(18)                   // Sets the zoom
                     .build();                   // Creates a CameraPosition from the builder
-            mMap.setPadding(0, 0, 0, 0);
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-//            mMap.addMarker(new MarkerOptions().position(new LatLng(loc.getLatitude(), loc.getLongitude())).title("It's Me!"));
-
         }
     }
 
-    private void animateToCurrentPosition() {
-        Location loc = getLocation();
+    public void animateToCurrentPosition() {
+        Location loc = mMap.getMyLocation();
 
         if (loc != null) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(loc.getLatitude(), loc.getLongitude()))      // Sets the center of the map to location user
                     .zoom(18)                   // Sets the zoom
                     .build();                   // Creates a CameraPosition from the builder
-            mMap.setPadding(0, 0, 0, 0);
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
@@ -254,8 +345,6 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
 
     public void menuButtonClicked(View view) {
         Log.i("Map-Menu", "Menu button clicked!");
-
-//        this.dl.show();
     }
 
     public void newPostButtonClicked(View view) {
@@ -269,7 +358,6 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
 
     public LatLng getCurrentLatLng() {
         Criteria cri = new Criteria();
-        LocationManager locm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    Activity#requestPermissions
@@ -280,11 +368,8 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
             // for Activity#requestPermissions for more details.
 //            return;
         }
-//        Location loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
-        Location loc = locm.getLastKnownLocation("network");
-        if (loc == null) {
-            loc = locm.getLastKnownLocation(locm.getBestProvider(cri, false));
-        }
+        Location loc = mMap.getMyLocation();
+
         LatLng ll = new LatLng(loc.getLatitude(), loc.getLongitude());
         return ll;
     }
@@ -325,25 +410,22 @@ public class ExploreActivity extends AppCompatActivity implements GoogleMap.OnMy
                 n.execute();
 
                 Toast.makeText(this, "Post Submitted!", Toast.LENGTH_SHORT).show();
-
-//                db.postDao().
-                //settings
-                //  after making a new post
-                //      1. do nothing
-                //      2. animate to current position
-                //      3. move to current position
-
-                //if return to position set
-//                animateToCurrentPosition();
-
-//                RefreshMapAsyncClass m = new RefreshMapAsyncClass();
-//                m.execute();
             }
         }
     }
 
-//    @Override
-//    public void onLocationChanged(Location location) {
-//
-//    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("lockMap", this.lockMap);
+
+        Bundle data = new Bundle();
+        data.putDouble("latitude", mMap.getCameraPosition().target.latitude);
+        data.putDouble("longitude", mMap.getCameraPosition().target.longitude);
+        data.putFloat("zoom", mMap.getCameraPosition().zoom);
+        data.putFloat("tilt", mMap.getCameraPosition().tilt);
+        data.putFloat("bearing", mMap.getCameraPosition().bearing);
+        outState.putBundle("cameraLocation", data);
+    }
 }
